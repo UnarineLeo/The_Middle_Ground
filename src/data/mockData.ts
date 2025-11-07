@@ -71,82 +71,292 @@ export const quizQuestions = [
   {
     id: 1,
     pattern: "Mediator Pattern",
-    difficulty: "Medium",
+    difficulty: "Easy",
     type: "multiple-choice",
-    question: "Which of the following best describes the Mediator pattern?",
+    question: "What is the main intent of the Mediator design pattern?",
     options: [
-      "A pattern that creates objects without specifying their exact classes",
-      "A pattern where an object encapsulates how a set of objects interact",
-      "A pattern that allows incompatible interfaces to work together",
-      "A pattern where objects are notified of state changes"
+      "To define one-to-one communication between objects",
+      "To define an object that encapsulates how a set of objects interact",
+      "To simplify inheritance among related classes",
+      "To hide object creation details from clients"
     ],
     correctAnswer: 1,
-    explanation: "The Mediator pattern defines an object that encapsulates how a set of objects interact. It promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently.",
-    source: "Design Patterns: Elements of Reusable Object-Oriented Software",
-    hint: "Think about an air traffic controller - they coordinate communication between multiple planes without the planes talking directly to each other.",
-    skeletonCode: `class TrafficControlMediator {
-  private trains: Train[] = [];
-  
-  registerTrain(train: Train) {
-    // TODO: Add train to mediator
-    this.trains.push(train);
-  }
-  
-  sendSignal(sender: Train, message: string) {
-    // TODO: Coordinate between trains
-  }
-}`
+    explanation: "The Mediator defines an object that encapsulates how a set of objects interact, promoting loose coupling between them.",
+    source: "Chapter 17, Section 17.2.1 - Intent",
+    hint: "It focuses on coordinating interactions between multiple objects."
   },
   {
     id: 2,
     pattern: "Mediator Pattern",
     difficulty: "Medium",
-    type: "scenario",
-    question: "You're building a chat application where users can send messages in a room. Which component would be the Mediator?",
-    options: [
-      "The User object",
-      "The Message object",
-      "The ChatRoom that coordinates message delivery",
-      "The Network connection"
-    ],
-    correctAnswer: 2,
-    explanation: "The ChatRoom acts as the Mediator by coordinating how users (colleagues) communicate with each other. Users don't send messages directly to other users; they send them through the ChatRoom mediator.",
-    source: "Head First Design Patterns",
-    hint: "The mediator is the central coordinator that manages interactions between participants.",
-    skeletonCode: `class ChatRoom {
-  private users: User[] = [];
-  
-  registerUser(user: User) {
-    this.users.push(user);
-  }
-  
-  sendMessage(message: string, from: User) {
-    // TODO: Distribute message to all users
-  }
-}`
+    type: "fill-in",
+    question: "The Mediator pattern promotes _____ by keeping objects from referring to each other explicitly.",
+    answer: "loose coupling",
+    explanation: "By removing direct references between colleagues, the Mediator pattern promotes loose coupling and flexibility.",
+    source: "Section 17.2.1 - Intent",
+    hint: "Think about the opposite of tight interdependence."
   },
   {
     id: 3,
     pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "Which of the following best describes the role of a ConcreteMediator?",
+    options: [
+      "It implements cooperative behavior by coordinating Colleague objects.",
+      "It defines an interface for communicating with subsystems.",
+      "It creates new colleagues dynamically.",
+      "It observes state changes in the system and notifies others."
+    ],
+    correctAnswer: 0,
+    explanation: "The ConcreteMediator coordinates and maintains communication between its colleagues.",
+    source: "Section 17.2.3 - Participants",
+    hint: "It’s responsible for coordinating all colleagues."
+  },
+  {
+    id: 4,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "What does each Colleague class know in the Mediator pattern?",
+    options: [
+      "Only the Mediator object",
+      "All other colleagues",
+      "Both Mediator and all other colleagues",
+      "No other object at all"
+    ],
+    correctAnswer: 0,
+    explanation: "Each Colleague knows only its Mediator and communicates through it rather than directly with other colleagues.",
+    source: "Section 17.2.3 - Participants",
+    hint: "Direct communication between colleagues is avoided."
+  },
+  {
+    id: 5,
+    pattern: "Mediator Pattern",
+    difficulty: "Easy",
+    type: "multiple-choice",
+    question: "What programming issue does the Mediator pattern help prevent?",
+    options: [
+      "Object redundancy",
+      "Spaghetti code phenomenon",
+      "Excessive memory usage",
+      "Data inconsistency"
+    ],
+    correctAnswer: 1,
+    explanation: "By reducing dependencies among classes, the Mediator pattern prevents tightly coupled spaghetti code.",
+    source: "Section 17.2.4 - Problem",
+    hint: "It solves a problem that arises from too many interconnections between classes."
+  },
+  {
+    id: 6,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "fill-in",
+    question: "A mediator is responsible for controlling and _____ the interactions of a group of objects.",
+    answer: "coordinating",
+    explanation: "The mediator centralizes control and coordination among related objects.",
+    source: "Section 17.3.1 - Purpose",
+    hint: "It doesn’t just control, it also synchronizes activities."
+  },
+  {
+    id: 7,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "Which of the following is an improvement achieved by applying the Mediator pattern?",
+    options: [
+      "Increased inheritance depth",
+      "Simplified update process",
+      "More direct communication",
+      "Tighter coupling between objects"
+    ],
+    correctAnswer: 1,
+    explanation: "Updates to behavior require changes only in the mediator, not all colleagues, simplifying maintenance.",
+    source: "Section 17.3.2 - Improvements achieved",
+    hint: "It makes future code updates easier."
+  },
+  {
+    id: 8,
+    pattern: "Mediator Pattern",
+    difficulty: "Easy",
+    type: "multiple-choice",
+    question: "How does the Mediator pattern increase code reusability?",
+    options: [
+      "By making all colleagues depend on each other",
+      "By tightly coupling mediator and colleagues",
+      "By decoupling colleagues from each other",
+      "By inheriting behavior from a single superclass"
+    ],
+    correctAnswer: 2,
+    explanation: "Decoupling colleagues allows them to be reused in other contexts independently.",
+    source: "Section 17.3.2 - Improvements achieved",
+    hint: "When components don’t depend directly on others, they’re easier to reuse."
+  },
+  {
+    id: 9,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "fill-in",
+    question: "When refactoring into the Mediator pattern, a many-to-many relationship is changed to a _____ relationship.",
+    answer: "one-to-many",
+    explanation: "The mediator centralizes communication, simplifying a many-to-many network into a one-to-many structure.",
+    source: "Section 17.3.2 - Simplification of object protocol",
+    hint: "Think about how communication becomes centralized."
+  },
+  {
+    id: 10,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "What is the purpose of the changed() method in the colleague interface?",
+    options: [
+      "To directly modify other colleagues",
+      "To notify the mediator that a change has occurred",
+      "To reset the mediator state",
+      "To destroy outdated objects"
+    ],
+    correctAnswer: 1,
+    explanation: "The changed() method notifies the mediator whenever a colleague changes, so it can propagate updates.",
+    source: "Section 17.3.3 - Implementation issues",
+    hint: "It’s the colleague’s way of signaling an update."
+  },
+  {
+    id: 11,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "In the Mediator’s notify() method, what parameter is passed to indicate the source of the change?",
+    options: [
+      "The type of update",
+      "The originator colleague",
+      "The mediator object itself",
+      "The system log"
+    ],
+    correctAnswer: 1,
+    explanation: "A pointer or reference to the originator colleague is passed, allowing the mediator to identify who triggered the update.",
+    source: "Section 17.3.3 - notify()",
+    hint: "It identifies which colleague caused the event."
+  },
+  {
+    id: 12,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "scenario",
+    question: "If a colleague’s state changes and you want all other colleagues updated automatically, which method should the colleague call?",
+    options: ["notify()", "changed()", "update()", "propagate()"],
+    correctAnswer: 1,
+    explanation: "Each colleague calls changed() to signal the mediator, which then notifies other colleagues.",
+    source: "Section 17.3.3",
+    hint: "It’s a method defined in the colleague interface."
+  },
+  {
+    id: 13,
+    pattern: "Mediator Pattern",
+    difficulty: "Hard",
+    type: "multiple-choice",
+    question: "Why should the mediator’s notify() method avoid sending the content of an update as a parameter?",
+    options: [
+      "To keep the interface stable and generic",
+      "Because it increases memory use",
+      "To ensure updates are irreversible",
+      "Because colleagues cannot interpret data"
+    ],
+    correctAnswer: 0,
+    explanation: "Avoiding detailed parameters keeps the interface flexible for various colleague types.",
+    source: "Section 17.3.3 - notify() discussion",
+    hint: "It’s about interface design stability."
+  },
+  {
+    id: 14,
+    pattern: "Mediator Pattern",
     difficulty: "Easy",
     type: "fill-in",
-    question: "In the Mediator pattern, objects communicate through the _____ instead of directly with each other.",
-    answer: "mediator",
-    explanation: "The Mediator pattern centralizes complex communications and control logic between objects in a system. The mediator acts as an intermediary that handles all communication.",
-    source: "Gang of Four Design Patterns",
-    hint: "What is the name of the central coordinator in this pattern?",
-    skeletonCode: `interface Colleague {
-  send(message: string): void;
-  receive(message: string): void;
-}
-
-class ConcreteColleague implements Colleague {
-  constructor(private mediator: Mediator) {}
-  
-  send(message: string) {
-    this.mediator.notify(this, message);
-  }
-}`
+    question: "The Mediator pattern’s protocol is _____, unlike the Facade pattern’s unidirectional protocol.",
+    answer: "multidirectional",
+    explanation: "Mediator enables two-way communication, while Facade only sends requests in one direction.",
+    source: "Section 17.3.4 - Related patterns",
+    hint: "Think of communication direction."
+  },
+  {
+    id: 15,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "How does the Mediator pattern differ from the Facade pattern?",
+    options: [
+      "Mediator centralizes communication; Facade simplifies interfaces.",
+      "Mediator creates objects; Facade manages memory.",
+      "Mediator hides complexity; Facade promotes coupling.",
+      "They are identical in behavior."
+    ],
+    correctAnswer: 0,
+    explanation: "Mediator coordinates object interaction, while Facade provides a simplified interface to a subsystem.",
+    source: "Section 17.3.4 - Related patterns",
+    hint: "One focuses on communication, the other on interface simplification."
+  },
+  {
+    id: 16,
+    pattern: "Mediator Pattern",
+    difficulty: "Easy",
+    type: "multiple-choice",
+    question: "Which pattern can colleagues use to communicate with the mediator?",
+    options: ["Observer", "Command", "Strategy", "Decorator"],
+    correctAnswer: 0,
+    explanation: "The Observer pattern is often used so colleagues can notify the mediator of changes.",
+    source: "Section 17.3.4 - Related patterns",
+    hint: "Think of a pattern used for notifications."
+  },
+  {
+    id: 17,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "scenario",
+    question: "In a file dialog example, which class acts as the ConcreteMediator?",
+    options: ["Dialog", "Widget", "FileSelectionDialog", "List"],
+    correctAnswer: 2,
+    explanation: "FileSelectionDialog implements cooperative behavior between widget components, acting as the ConcreteMediator.",
+    source: "Section 17.4 - Example",
+    hint: "It coordinates all widgets in the dialog."
+  },
+  {
+    id: 18,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "multiple-choice",
+    question: "In the example, which class represents the Colleague interface?",
+    options: ["Dialog", "Widget", "Edit", "FileSelectionDialog"],
+    correctAnswer: 1,
+    explanation: "Widget serves as the abstract colleague in the example, while List and Edit are its concrete colleagues.",
+    source: "Section 17.4 - Example",
+    hint: "It’s the parent class of List and Edit."
+  },
+  {
+    id: 19,
+    pattern: "Mediator Pattern",
+    difficulty: "Medium",
+    type: "fill-in",
+    question: "In the file dialog example, the method widgetChanged() in FileSelectionDialog acts as the _____ of communication.",
+    answer: "hub",
+    explanation: "widgetChanged() is the central hub for all interaction logic among widgets.",
+    source: "Section 17.4 - Example",
+    hint: "Think of a central connection point."
+  },
+  {
+    id: 20,
+    pattern: "Mediator Pattern",
+    difficulty: "Hard",
+    type: "multiple-choice",
+    question: "What does the sequence diagram in the example illustrate?",
+    options: [
+      "The instantiation order of abstract classes",
+      "The time ordering of mediator-coordinated widget interactions",
+      "Memory allocation of widget objects",
+      "The class inheritance hierarchy"
+    ],
+    correctAnswer: 1,
+    explanation: "It shows the chronological order of interactions governed by the mediator when widgets update.",
+    source: "Section 17.4 - Example, Figure 3",
+    hint: "It focuses on message order and timing."
   }
 ];
 
@@ -206,3 +416,368 @@ export const conductorNodes = [
   { id: 3, type: "component", name: "Observer", x: 300, y: 150 },
   { id: 4, type: "action", name: "Notify", x: 500, y: 100 }
 ];
+
+interface Challenge {
+  id: number;
+  title: string;
+  scenario: string;
+  hint: string;
+  type: "fill" | "drag";
+  code: string;
+  blanks?: { id: string; answer: string }[];
+  dragItems?: { id: string; text: string; correctPosition: number }[];
+  correctCode: string;
+}
+
+
+export const challenges: Challenge[] = [
+  {
+    id: 1,
+    title: "Airport Traffic Control System",
+    scenario: "You're building an airport traffic control system where multiple runways need to coordinate with aircraft. The control tower acts as a mediator, managing all communication between runways and planes to prevent conflicts. Without the mediator pattern, each runway would need to directly communicate with every other runway to check availability, creating a complex web of dependencies. Instead, the control tower centralizes all communication - when a runway requests to land an aircraft, the tower notifies all other runways about the request. This way, runways only know about the control tower, not about each other. Your task is to implement the key methods that enable this coordinated communication flow.",
+    hint: "The mediator (ControlTower) needs a method to handle notifications from colleagues. This method should be called 'notify' and it receives both the sender runway and the message. When the tower receives a notification, it should forward the message to all other runways by calling their 'receive' method. Each Runway needs to maintain a reference to its mediator using a pointer variable, typically named 'mediator', so it can send notifications when needed.",
+    type: "fill",
+    code: `class ControlTower {
+private:
+    vector<Runway*> runways;
+    
+public:
+    void registerRunway(Runway* runway) {
+        runways.push_back(runway);
+    }
+    
+    void ___BLANK1___(Runway* runway, string message) {
+        for (auto r : runways) {
+            if (r != runway) {
+                r->___BLANK2___(message);
+            }
+        }
+    }
+};
+
+class Runway {
+private:
+    ControlTower* ___BLANK3___;
+    string name;
+    
+public:
+    Runway(ControlTower* tower, string n) : mediator(tower), name(n) {
+        tower->registerRunway(this);
+    }
+    
+    void requestLanding() {
+        mediator->notify(this, name + " requesting landing");
+    }
+    
+    void receive(string message) {
+        cout << name << " received: " << message << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "notify" },
+      { id: "BLANK2", answer: "receive" },
+      { id: "BLANK3", answer: "mediator" }
+    ],
+    correctCode: `class ControlTower {
+private:
+    vector<Runway*> runways;
+    
+public:
+    void registerRunway(Runway* runway) {
+        runways.push_back(runway);
+    }
+    
+    void notify(Runway* runway, string message) {
+        for (auto r : runways) {
+            if (r != runway) {
+                r->receive(message);
+            }
+        }
+    }
+};
+
+class Runway {
+private:
+    ControlTower* mediator;
+    string name;
+    
+public:
+    Runway(ControlTower* tower, string n) : mediator(tower), name(n) {
+        tower->registerRunway(this);
+    }
+    
+    void requestLanding() {
+        mediator->notify(this, name + " requesting landing");
+    }
+    
+    void receive(string message) {
+        cout << name << " received: " << message << endl;
+    }
+};`
+  },
+  {
+    id: 2,
+    title: "Smart Home System",
+    scenario: "Design a smart home where devices communicate through a central hub. When motion is detected, the hub coordinates the lights, thermostat, and security camera without devices talking directly to each other. In a traditional approach, each smart device would need direct connections to every other device - the motion sensor would call the lights directly, the thermostat directly, and the camera directly. This creates tight coupling and makes it difficult to add new devices. With the Mediator pattern, the SmartHomeHub sits in the middle: when the motion sensor detects movement, it notifies the hub, and the hub then coordinates all other devices' responses. Your task is to arrange the code lines in the correct order to build a properly structured mediator class following C++ conventions.",
+    hint: "In C++, class structure follows a specific order: First comes the class declaration, then access specifiers (private before public is conventional), followed by member variables in the private section, and finally public methods. The SmartHomeHub needs to store a vector of devices in its private section, provide a registerDevice() method to add devices, and implement a notify() method that loops through all devices and calls handleEvent() on each one except the sender. Make sure the loop logic checks if the current device is not the sender before forwarding the event.",
+    type: "drag",
+    code: "",
+    dragItems: [
+      { id: "1", text: "class SmartHomeHub {", correctPosition: 0 },
+      { id: "2", text: "private:", correctPosition: 1 },
+      { id: "3", text: "    vector<SmartDevice*> devices;", correctPosition: 2 },
+      { id: "4", text: "public:", correctPosition: 3 },
+      { id: "5", text: "    void registerDevice(SmartDevice* device) {", correctPosition: 4 },
+      { id: "6", text: "        devices.push_back(device);", correctPosition: 5 },
+      { id: "7", text: "    }", correctPosition: 6 },
+      { id: "8", text: "    void notify(SmartDevice* sender, string event) {", correctPosition: 7 },
+      { id: "9", text: "        for (auto device : devices) {", correctPosition: 8 },
+      { id: "10", text: "            if (device != sender) {", correctPosition: 9 },
+      { id: "11", text: "                device->handleEvent(event);", correctPosition: 10 },
+      { id: "12", text: "            }", correctPosition: 11 },
+      { id: "13", text: "        }", correctPosition: 12 },
+      { id: "14", text: "    }", correctPosition: 13 },
+      { id: "15", text: "};", correctPosition: 14 }
+    ],
+    correctCode: `class SmartHomeHub {
+private:
+    vector<SmartDevice*> devices;
+public:
+    void registerDevice(SmartDevice* device) {
+        devices.push_back(device);
+    }
+    void notify(SmartDevice* sender, string event) {
+        for (auto device : devices) {
+            if (device != sender) {
+                device->handleEvent(event);
+            }
+        }
+    }
+};`
+  },
+  {
+    id: 3,
+    title: "Online Chat Room",
+    scenario: "Create a chat room where users can send messages. The chat room mediator receives messages from one user and broadcasts them to all other users, preventing direct user-to-user communication. Imagine building a messaging application where you have many users who want to communicate. Without a mediator, User A would need to maintain references to Users B, C, D, and E to send messages directly to each of them. If a new user F joins, every existing user needs to be updated with this new reference. This becomes unmanageable as the system grows. The Mediator pattern solves this by introducing a ChatRoom that acts as the central hub. Users only need to know about the ChatRoom, not about each other. When a user wants to send a message, they send it to the ChatRoom, and the ChatRoom handles broadcasting it to all other participants. Your task is to complete the implementation by filling in the missing method names that establish this communication flow.",
+    hint: "The relationship between users and the chat room involves three key methods. First, when a user is added to the chat room, the chat room needs to give that user a reference to itself - this is done through a method called 'setChatRoom'. Second, when a user wants to communicate, they call a method on the ChatRoom that handles message distribution - this should be called 'sendMessage' and takes both the sender and the message content. Third, the User class needs a private member variable to store its reference to the ChatRoom mediator - this should be the 'chatRoom' pointer. Think about the flow: user sends → mediator receives → mediator broadcasts to others.",
+    type: "fill",
+    code: `class ChatRoom {
+private:
+    vector<User*> users;
+    
+public:
+    void addUser(User* user) {
+        users.push_back(user);
+        user->___BLANK1___(this);
+    }
+    
+    void ___BLANK2___(User* sender, string message) {
+        for (auto user : users) {
+            if (user != sender) {
+                user->receive(sender->getName() + ": " + message);
+            }
+        }
+    }
+};
+
+class User {
+private:
+    ChatRoom* chatRoom;
+    string name;
+    
+public:
+    User(string n) : name(n), chatRoom(nullptr) {}
+    
+    void setChatRoom(ChatRoom* room) {
+        ___BLANK3___ = room;
+    }
+    
+    void send(string message) {
+        chatRoom->sendMessage(this, message);
+    }
+    
+    void receive(string message) {
+        cout << name << " received: " << message << endl;
+    }
+    
+    string getName() { return name; }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "setChatRoom" },
+      { id: "BLANK2", answer: "sendMessage" },
+      { id: "BLANK3", answer: "chatRoom" }
+    ],
+    correctCode: `class ChatRoom {
+private:
+    vector<User*> users;
+    
+public:
+    void addUser(User* user) {
+        users.push_back(user);
+        user->setChatRoom(this);
+    }
+    
+    void sendMessage(User* sender, string message) {
+        for (auto user : users) {
+            if (user != sender) {
+                user->receive(sender->getName() + ": " + message);
+            }
+        }
+    }
+};
+
+class User {
+private:
+    ChatRoom* chatRoom;
+    string name;
+    
+public:
+    User(string n) : name(n), chatRoom(nullptr) {}
+    
+    void setChatRoom(ChatRoom* room) {
+        chatRoom = room;
+    }
+    
+    void send(string message) {
+        chatRoom->sendMessage(this, message);
+    }
+    
+    void receive(string message) {
+        cout << name << " received: " << message << endl;
+    }
+    
+    string getName() { return name; }
+};`
+  },
+  {
+    id: 4,
+    title: "Restaurant Order Management",
+    scenario: "Build a restaurant system where customers place orders and the kitchen fulfills them. The OrderManager acts as a mediator between customers and kitchen stations, routing orders to appropriate stations. In a traditional restaurant without this pattern, each customer would need to know which kitchen station handles their specific order - the grill for steaks, the salad station for appetizers, the dessert station for sweets. This creates chaos and confusion. The OrderManager mediator centralizes all order routing - customers simply place orders with the manager, and the manager intelligently routes each order to the correct kitchen station while tracking order status. Your task is to arrange the mediator class code in proper C++ structure.",
+    hint: "The OrderManager class follows standard C++ conventions: declare the class, define private members first (a vector to store kitchen stations), then public methods. You need a registerStation() method to add stations to the manager, and a routeOrder() method that loops through all stations and calls their appropriate handling method. Remember that access specifiers (private:, public:) come before their respective members.",
+    type: "drag",
+    code: "",
+    dragItems: [
+      { id: "1", text: "class OrderManager {", correctPosition: 0 },
+      { id: "2", text: "private:", correctPosition: 1 },
+      { id: "3", text: "    vector<KitchenStation*> stations;", correctPosition: 2 },
+      { id: "4", text: "public:", correctPosition: 3 },
+      { id: "5", text: "    void registerStation(KitchenStation* station) {", correctPosition: 4 },
+      { id: "6", text: "        stations.push_back(station);", correctPosition: 5 },
+      { id: "7", text: "    }", correctPosition: 6 },
+      { id: "8", text: "    void routeOrder(string dish, int tableNumber) {", correctPosition: 7 },
+      { id: "9", text: "        for (auto station : stations) {", correctPosition: 8 },
+      { id: "10", text: "            station->prepareOrder(dish, tableNumber);", correctPosition: 9 },
+      { id: "11", text: "        }", correctPosition: 10 },
+      { id: "12", text: "    }", correctPosition: 11 },
+      { id: "13", text: "};", correctPosition: 12 }
+    ],
+    correctCode: `class OrderManager {
+private:
+    vector<KitchenStation*> stations;
+public:
+    void registerStation(KitchenStation* station) {
+        stations.push_back(station);
+    }
+    void routeOrder(string dish, int tableNumber) {
+        for (auto station : stations) {
+            station->prepareOrder(dish, tableNumber);
+        }
+    }
+};`
+  },
+  {
+    id: 5,
+    title: "Stock Trading Exchange",
+    scenario: "Design a stock exchange where traders buy and sell stocks through a central exchange mediator. The exchange matches buy and sell orders without traders communicating directly. In financial markets, having traders negotiate directly with each other for every transaction would be impossibly slow and chaotic. The StockExchange mediator solves this by collecting all buy and sell orders, matching them based on price and quantity, and executing trades automatically. Traders only interact with the exchange, not with each other, ensuring fair pricing and efficient order execution. Your task is to implement the mediator methods that handle order placement and trader registration.",
+    hint: "The StockExchange mediator needs three key components: a 'registerTrader' method that takes a Trader pointer and gives that trader a reference to the exchange (using the trader's 'setExchange' method), a 'placeOrder' method that handles incoming orders from traders, and the Trader class needs a private member variable to store its exchange reference (call it 'exchange'). The flow is: trader → exchange → order processing → notification to relevant traders.",
+    type: "fill",
+    code: `class StockExchange {
+private:
+    vector<Trader*> traders;
+    
+public:
+    void ___BLANK1___(Trader* trader) {
+        traders.push_back(trader);
+        trader->setExchange(this);
+    }
+    
+    void ___BLANK2___(Trader* trader, string stock, int quantity, double price) {
+        cout << "Order placed: " << stock << " x" << quantity << " at $" << price << endl;
+        // Match and execute orders
+        for (auto t : traders) {
+            if (t != trader) {
+                t->notifyOrder(stock, quantity, price);
+            }
+        }
+    }
+};
+
+class Trader {
+private:
+    StockExchange* ___BLANK3___;
+    string name;
+    
+public:
+    Trader(string n) : name(n), exchange(nullptr) {}
+    
+    void setExchange(StockExchange* ex) {
+        exchange = ex;
+    }
+    
+    void buyStock(string stock, int quantity, double price) {
+        exchange->placeOrder(this, stock, quantity, price);
+    }
+    
+    void notifyOrder(string stock, int quantity, double price) {
+        cout << name << " notified of order: " << stock << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "registerTrader" },
+      { id: "BLANK2", answer: "placeOrder" },
+      { id: "BLANK3", answer: "exchange" }
+    ],
+    correctCode: `class StockExchange {
+private:
+    vector<Trader*> traders;
+    
+public:
+    void registerTrader(Trader* trader) {
+        traders.push_back(trader);
+        trader->setExchange(this);
+    }
+    
+    void placeOrder(Trader* trader, string stock, int quantity, double price) {
+        cout << "Order placed: " << stock << " x" << quantity << " at $" << price << endl;
+        // Match and execute orders
+        for (auto t : traders) {
+            if (t != trader) {
+                t->notifyOrder(stock, quantity, price);
+            }
+        }
+    }
+};
+
+class Trader {
+private:
+    StockExchange* exchange;
+    string name;
+    
+public:
+    Trader(string n) : name(n), exchange(nullptr) {}
+    
+    void setExchange(StockExchange* ex) {
+        exchange = ex;
+    }
+    
+    void buyStock(string stock, int quantity, double price) {
+        exchange->placeOrder(this, stock, quantity, price);
+    }
+    
+    void notifyOrder(string stock, int quantity, double price) {
+        cout << name << " notified of order: " << stock << endl;
+    }
+};`
+  },
+];
+

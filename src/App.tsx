@@ -17,6 +17,7 @@ import { HomePage } from "./components/HomePage";
 import { MediatorLearnPage } from "./components/MediatorLearnPage";
 import { QuizPage } from "./components/QuizPage";
 import { ChatbotPage } from "./components/ChatbotPage";
+import { CodeArenaPage } from "./components/CodeArenaPage";
 import { TrainConductorPage } from "./components/TrainConductorPage";
 import { ScoreboardPage } from "./components/ScoreboardPage";
 import { BottomNav } from "./components/BottomNav";
@@ -34,6 +35,7 @@ export default function App() {
       {currentPage === "home" && <HomePage onNavigate={handleNavigate} />}
       {currentPage === "learn" && <MediatorLearnPage onNavigate={handleNavigate} />}
       {currentPage === "quiz" && <QuizPage onNavigate={handleNavigate} />}
+      {currentPage === "codearena" && <CodeArenaPage onNavigate={handleNavigate} />}
       {currentPage === "chatbot" && <ChatbotPage onNavigate={handleNavigate} />}
       {currentPage === "conductor" && <TrainConductorPage onNavigate={handleNavigate} />}
       {currentPage === "scoreboard" && <ScoreboardPage onNavigate={handleNavigate} />}

@@ -32,10 +32,22 @@ export function QuizPage({ onNavigate }: QuizPageProps) {
     
     if (question.type === "fill-in") {
       if (userAnswer.toLowerCase().trim() === question.answer.toLowerCase()) {
-        setScore(score + 100);
+        if (question.difficulty === "Easy") {
+          setScore(score + 25);
+        } else if(question.difficulty === "Medium") {
+          setScore(score + 50);
+        } else{
+           setScore(score + 100); 
+        }
       }
     } else if (selectedAnswer === question.correctAnswer) {
-      setScore(score + 100);
+      if (question.difficulty === "Easy") {
+          setScore(score + 25);
+        } else if(question.difficulty === "Medium") {
+          setScore(score + 50);
+        } else{
+           setScore(score + 100); 
+        }
     }
   };
 
@@ -199,7 +211,7 @@ export function QuizPage({ onNavigate }: QuizPageProps) {
               <Button
                 variant="outline"
                 onClick={() => setShowHint(!showHint)}
-                className="bg-[#2C2F33] border-[#2F3136] text-[#5865F2] hover:bg-[#5865F2] hover:text-white"
+                className="bg-[#2C2F33] border-[#2F3136] hover:bg-[#5865F2] text-white"
               >
                 <Lightbulb className="w-4 h-4" />
               </Button>
@@ -265,14 +277,14 @@ export function QuizPage({ onNavigate }: QuizPageProps) {
       </AnimatePresence>
 
       {/* Skeleton Code */}
-      <Card className="bg-[#2C2F33] border-[#2F3136] p-6 card-shadow mb-6">
+      {/* <Card className="bg-[#2C2F33] border-[#2F3136] p-6 card-shadow mb-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-white">Skeleton Code</h3>
           <Button
             variant="outline"
             size="sm"
             onClick={downloadCode}
-            className="bg-[#23272A] border-[#2F3136] text-[#5865F2] hover:bg-[#5865F2] hover:text-white"
+            className="bg-[#23272A] border-[#2F3136] hover:bg-[#5865F2] text-white"
           >
             <Download className="w-4 h-4 mr-2" />
             Download .cpp
@@ -283,7 +295,7 @@ export function QuizPage({ onNavigate }: QuizPageProps) {
             <code>{question.skeletonCode}</code>
           </pre>
         </div>
-      </Card>
+      </Card> */}
 
       {/* Navigation */}
       <div className="flex items-center justify-between">
