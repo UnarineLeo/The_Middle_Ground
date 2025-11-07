@@ -17,7 +17,7 @@ export const designPatterns = [
     difficulty: "Intermediate",
     description: "Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified.",
     icon: "👁️",
-    progress: 75,
+    progress: 0,
     completed: false,
     featured: false
   },
@@ -28,7 +28,7 @@ export const designPatterns = [
     difficulty: "Beginner",
     description: "Define a family of algorithms, encapsulate each one, and make them interchangeable.",
     icon: "🎯",
-    progress: 100,
+    progress: 0,
     completed: true,
     featured: false
   },
@@ -39,7 +39,7 @@ export const designPatterns = [
     difficulty: "Intermediate",
     description: "Attach additional responsibilities to an object dynamically.",
     icon: "🎨",
-    progress: 45,
+    progress: 0,
     completed: false,
     featured: false
   },
@@ -50,7 +50,7 @@ export const designPatterns = [
     difficulty: "Beginner",
     description: "Convert the interface of a class into another interface clients expect.",
     icon: "🔌",
-    progress: 30,
+    progress: 0,
     completed: false,
     featured: false
   },
@@ -61,7 +61,7 @@ export const designPatterns = [
     difficulty: "Intermediate",
     description: "Encapsulate a request as an object, thereby letting you parameterize clients with different requests.",
     icon: "⚡",
-    progress: 60,
+    progress: 0,
     completed: false,
     featured: false
   }
@@ -174,13 +174,13 @@ export const chatMessages = [
 export const userProfile = {
   name: "Alex Johnson",
   avatar: "AJ",
-  level: 12,
+  level: 8,
   xp: 2847,
   nextLevelXp: 3000,
   badges: [
-    { id: 1, name: "Mediator Master", icon: "🚂", earned: false },
-    { id: 2, name: "Quick Learner", icon: "⚡", earned: true },
-    { id: 3, name: "Quiz Champion", icon: "🎯", earned: true },
+    { id: 1, name: "Quick Learner", icon: "⚡", earned: true },
+    { id: 2, name: "Quiz Champion", icon: "🎯", earned: true },
+    { id: 3, name: "Mediator Master", icon: "🚂", earned: false },
     { id: 4, name: "Train Conductor", icon: "🎮", earned: false },
     { id: 5, name: "Perfect Score", icon: "💯", earned: false }
   ],

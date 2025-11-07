@@ -1,4 +1,4 @@
-import { Home, BookOpen, MessageCircle, Music, Trophy } from "lucide-react";
+import { Home, MessageCircle, Trophy, Book, Gamepad2 } from "lucide-react";
 import { motion } from "motion/react";
 
 interface BottomNavProps {
@@ -11,8 +11,8 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
     { id: "home", icon: Home, label: "Home" },
     { id: "quiz", icon: Trophy, label: "Quiz" },
     { id: "chatbot", icon: MessageCircle, label: "Chatbot" },
-    { id: "learn", icon: BookOpen, label: "Learn" },
-    { id: "conductor", icon: Music, label: "Conductor" }
+    { id: "learn", icon: Book, label: "Learn The Pattern" },
+    { id: "conductor", icon: Gamepad2, label: "Conductor" }
   ];
 
   return (

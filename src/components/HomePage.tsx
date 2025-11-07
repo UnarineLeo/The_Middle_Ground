@@ -112,7 +112,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 <Button
                   onClick={() => onNavigate("conductor")}
                   variant="outline"
-                  className="border-[#5865F2] text-[#5865F2] hover:bg-[#5865F2] hover:text-white"
+                  className="border-[#5865F2] hover:bg-[#5865F2] text-white"
                 >
                   Try the Simulator
                 </Button>
@@ -192,27 +192,41 @@ export function HomePage({ onNavigate }: HomePageProps) {
 
       {/* Pattern Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredPatterns.map((pattern, index) => (
-          <motion.div
-            key={pattern.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + index * 0.05 }}
-            whileHover={{ y: -4 }}
-          >
-            <Card
-              className={`bg-[#2C2F33] border-[#2F3136] p-5 cursor-pointer card-shadow hover:border-[#5865F2] transition-all group ${
-                pattern.id === 1 ? "ring-2 ring-[#5865F2] ring-offset-2 ring-offset-[#23272A]" : ""
-              }`}
-              onClick={() => onNavigate("learn")}
+        {filteredPatterns.map((pattern, index) => {
+          const isMediator = pattern.id === 1;
+          const isDisabled = !isMediator;
+          
+          return (
+            <motion.div
+              key={pattern.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.05 }}
+              whileHover={isMediator ? { y: -4 } : {}}
+              className={isDisabled ? "opacity-40" : ""}
             >
+              <Card
+                className={`bg-[#2C2F33] border-[#2F3136] p-5 card-shadow transition-all group ${
+                  isMediator 
+                    ? "cursor-pointer hover:border-[#5865F2] ring-2 ring-[#5865F2] ring-offset-2 ring-offset-[#23272A]" 
+                    : "cursor-not-allowed grayscale"
+                }`}
+                onClick={() => isMediator && onNavigate("learn")}
+              >
               <div className="flex items-start justify-between mb-3">
                 <div className="text-3xl">{pattern.icon}</div>
                 <div className="flex gap-2">
-                  {pattern.id === 1 && (
+                  {isMediator && (
                     <Badge className="bg-[#5865F2] text-white">
                       Featured ⭐
                     </Badge>
+                  )}
+                  {isDisabled && (
+                    <div>
+                      <Badge className="bg-[#5865F2] text-white">
+                        Coming Soon
+                      </Badge>
+                    </div>
                   )}
                   <Badge 
                     variant="secondary" 
@@ -227,28 +241,33 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 </div>
               </div>
               
-              <h3 className="text-white mb-2">{pattern.name}</h3>
-              <p className="text-sm text-gray-400 mb-4 line-clamp-2">
+              <h3 className={`mb-2 ${isMediator ? "text-white" : "text-gray-500"}`}>{pattern.name}</h3>
+              <p className={`text-sm mb-4 line-clamp-2 ${isMediator ? "text-gray-400" : "text-gray-600"}`}>
                 {pattern.description}
               </p>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-400">Progress</span>
-                  <span className="text-[#5865F2]">{pattern.progress}%</span>
+                  <span className={isMediator ? "text-gray-400" : "text-gray-600"}>Progress</span>
+                  <span className={isMediator ? "text-[#5865F2]" : "text-gray-600"}>{pattern.progress}%</span>
                 </div>
                 <Progress value={pattern.progress} className="h-2" />
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <Badge variant="outline" className="border-[#5865F2] text-[#5865F2]">
+                <Badge variant="outline" className={isMediator ? "border-[#5865F2] text-[#5865F2]" : "border-gray-600 text-gray-600"}>
                   {pattern.category}
                 </Badge>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-[#5865F2] group-hover:translate-x-1 transition-all" />
+                <ChevronRight className={`w-5 h-5 transition-all ${
+                  isMediator 
+                    ? "text-gray-400 group-hover:text-[#5865F2] group-hover:translate-x-1" 
+                    : "text-gray-600"
+                }`} />
               </div>
             </Card>
           </motion.div>
-        ))}
+        );
+        })}
       </div>
     </div>
   );
