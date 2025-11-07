@@ -172,8 +172,8 @@ export const chatMessages = [
 ];
 
 export const userProfile = {
-  name: "Alex Johnson",
-  avatar: "AJ",
+  name: "Wandile Mathebula",
+  avatar: "WM",
   level: 8,
   xp: 2847,
   nextLevelXp: 3000,
@@ -193,7 +193,7 @@ export const leaderboard = [
   { rank: 1, name: "Emma Wilson", score: 4250, badges: 15, avatar: "EW", status: "winner" },
   { rank: 2, name: "Michael Chen", score: 3890, badges: 12, avatar: "MC", status: "winner" },
   { rank: 3, name: "Sarah Davis", score: 3645, badges: 11, avatar: "SD", status: "winner" },
-  { rank: 4, name: "Alex Johnson", score: 2847, badges: 8, avatar: "AJ", status: "winner" },
+  { rank: 4, name: "Wandile Mathebula", score: 2847, badges: 8, avatar: "AJ", status: "winner" },
   { rank: 5, name: "James Brown", score: 2430, badges: 7, avatar: "JB", status: "winner" },
   { rank: 6, name: "Lisa Anderson", score: 2180, badges: 6, avatar: "LA", status: "loser" },
   { rank: 7, name: "David Martinez", score: 1920, badges: 5, avatar: "DM", status: "loser" },
