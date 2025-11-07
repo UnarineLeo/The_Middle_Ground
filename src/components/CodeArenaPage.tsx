@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Code, Download, Lightbulb, CheckCircle2, XCircle, Shuffle } from "lucide-react";
+import { ArrowLeft, Code, Download, Lightbulb, CheckCircle2, XCircle, Shuffle, Ticket } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -8,50 +8,53 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { toast } from "sonner@2.0.3";
+import { challenges } from "../data/mockData";
 
 interface CodeArenaPageProps {
   onNavigate: (page: string) => void;
 }
-import { challenges } from "../data/mockData";
+
+interface Challenge {
+  id: number;
+  title: string;
+  scenario: string;
+  hint: string;
+  type: "fill" | "drag";
+  code: string;
+  blanks?: { id: string; answer: string }[];
+  dragItems?: { id: string; text: string; correctPosition: number }[];
+  correctCode: string;
+}
 
 // Syntax highlighting helper
 const highlightCppSyntax = (code: string) => {
   const keywords = ['class', 'private', 'public', 'void', 'for', 'if', 'return', 'auto', 'vector', 'string', 'cout', 'endl', 'this'];
   const types = ['vector', 'string', 'int', 'bool', 'char', 'double', 'float'];
   
-  // Preserve leading whitespace
   const leadingWhitespace = code.match(/^(\s*)/)?.[0] || '';
   const trimmedCode = code.trimStart();
   
   let highlighted = trimmedCode;
   
-  // Highlight comments
   highlighted = highlighted.replace(/\/\/(.*)/g, '<span class="text-gray-500 italic">// $1</span>');
-  
-  // Highlight strings (be careful not to break HTML)
   highlighted = highlighted.replace(/"([^"]*)"/g, '<span class="text-green-400">"$1"</span>');
   
-  // Highlight keywords
   keywords.forEach(keyword => {
     const regex = new RegExp(`\\b(${keyword})\\b`, 'g');
     highlighted = highlighted.replace(regex, '<span class="text-purple-400">$1</span>');
   });
   
-  // Highlight types
   types.forEach(type => {
     const regex = new RegExp(`\\b(${type})\\b`, 'g');
     highlighted = highlighted.replace(regex, '<span class="text-blue-400">$1</span>');
   });
   
-  // Highlight function calls
   highlighted = highlighted.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g, '<span class="text-yellow-400">$1</span>(');
   
-  // Convert leading whitespace to non-breaking spaces to preserve indentation
   const preservedWhitespace = leadingWhitespace.replace(/ /g, '&nbsp;');
   
   return preservedWhitespace + highlighted;
 };
-
 
 interface DraggableItemProps {
   item: { id: string; text: string };
@@ -79,49 +82,55 @@ const DraggableItem = ({ item, index, moveItem }: DraggableItemProps) => {
   });
 
   return (
-    <motion.div
-      ref={(node) => drag(drop(node))}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: isDragging ? 0.5 : 1, x: 0 }}
-      className={`bg-[#23272A] border border-[#2F3136] rounded-lg hover:border-[#5865F2] transition-all overflow-hidden ${
-        isDragging ? "opacity-50" : ""
-      }`}
-    >
-      <div className="flex cursor-move">
-        {/* Line Number */}
-        <div className="bg-[#1E1F22] px-4 py-3 border-r border-[#2F3136] select-none">
-          <span className="text-gray-600 text-sm font-mono">{index + 1}</span>
+    <div ref={(node) => drag(drop(node))}>
+      <motion.div
+        whileHover={{ scale: 1.02, x: 4 }}
+        className={`bg-[#1E2124] border border-[#2F3136] rounded-lg p-3 cursor-move flex items-center gap-3 mb-2 ${
+          isDragging ? "opacity-50" : ""
+        }`}
+      >
+        <div className="flex flex-col gap-1">
+          <div className="w-1 h-1 bg-gray-600 rounded-full" />
+          <div className="w-1 h-1 bg-gray-600 rounded-full" />
+          <div className="w-1 h-1 bg-gray-600 rounded-full" />
         </div>
-        {/* Code Content */}
-        <div className="flex-1 px-4 py-3">
-          <code 
-            className="text-sm text-gray-300 font-mono"
-            dangerouslySetInnerHTML={{ __html: highlightCppSyntax(item.text) }}
-          />
-        </div>
-      </div>
-    </motion.div>
+        <code
+          className="text-sm text-gray-300 font-mono flex-1"
+          dangerouslySetInnerHTML={{ __html: highlightCppSyntax(item.text) }}
+        />
+      </motion.div>
+    </div>
   );
 };
 
 export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
-  const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
+  const [selectedChallenge, setSelectedChallenge] = useState<Challenge | null>(null);
   const [showHint, setShowHint] = useState(false);
   const [fillAnswers, setFillAnswers] = useState<{ [key: string]: string }>({});
   const [draggedItems, setDraggedItems] = useState<{ id: string; text: string }[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
 
-  const currentChallenge = challenges[currentChallengeIndex];
-
-  // Initialize dragged items when challenge changes
-  useState(() => {
-    if (currentChallenge.type === "drag" && currentChallenge.dragItems) {
-      // Shuffle items
-      const shuffled = [...currentChallenge.dragItems].sort(() => Math.random() - 0.5);
+  const handleSelectChallenge = (challenge: Challenge) => {
+    setSelectedChallenge(challenge);
+    setFillAnswers({});
+    setShowHint(false);
+    setIsSubmitted(false);
+    setIsCorrect(false);
+    
+    if (challenge.type === "drag" && challenge.dragItems) {
+      const shuffled = [...challenge.dragItems].sort(() => Math.random() - 0.5);
       setDraggedItems(shuffled);
     }
-  });
+  };
+
+  const handleBackToSelection = () => {
+    setSelectedChallenge(null);
+    setFillAnswers({});
+    setShowHint(false);
+    setIsSubmitted(false);
+    setIsCorrect(false);
+  };
 
   const handleFillAnswer = (blankId: string, value: string) => {
     setFillAnswers({ ...fillAnswers, [blankId]: value });
@@ -137,17 +146,18 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
   };
 
   const shuffleItems = () => {
-    if (currentChallenge.dragItems) {
-      const shuffled = [...currentChallenge.dragItems].sort(() => Math.random() - 0.5);
+    if (selectedChallenge?.dragItems) {
+      const shuffled = [...selectedChallenge.dragItems].sort(() => Math.random() - 0.5);
       setDraggedItems(shuffled);
       setIsSubmitted(false);
     }
   };
 
   const handleSubmit = () => {
-    if (currentChallenge.type === "fill") {
-      // Check fill-in-the-blank answers
-      const allCorrect = currentChallenge.blanks?.every(
+    if (!selectedChallenge) return;
+
+    if (selectedChallenge.type === "fill") {
+      const allCorrect = selectedChallenge.blanks?.every(
         (blank) => fillAnswers[blank.id]?.trim().toLowerCase() === blank.answer.toLowerCase()
       );
       setIsCorrect(allCorrect || false);
@@ -162,8 +172,7 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
           description: "Pay attention to the method names and relationships."
         });
       }
-    } else if (currentChallenge.type === "drag") {
-      // Check drag and drop order
+    } else if (selectedChallenge.type === "drag") {
       const allCorrect = draggedItems.every(
         (item, index) => item.correctPosition === index
       );
@@ -183,11 +192,13 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([currentChallenge.correctCode], { type: "text/plain" });
+    if (!selectedChallenge) return;
+    
+    const blob = new Blob([selectedChallenge.correctCode], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `mediator_${currentChallenge.title.toLowerCase().replace(/\s+/g, "_")}.cpp`;
+    a.download = `mediator_${selectedChallenge.title.toLowerCase().replace(/\s+/g, "_")}.cpp`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -197,42 +208,34 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
     });
   };
 
-  const nextChallenge = () => {
-    if (currentChallengeIndex < challenges.length - 1) {
-      setCurrentChallengeIndex(currentChallengeIndex + 1);
-      setFillAnswers({});
-      setShowHint(false);
-      setIsSubmitted(false);
-      setIsCorrect(false);
-      if (challenges[currentChallengeIndex + 1].type === "drag" && challenges[currentChallengeIndex + 1].dragItems) {
-        const shuffled = [...challenges[currentChallengeIndex + 1].dragItems!].sort(() => Math.random() - 0.5);
-        setDraggedItems(shuffled);
-      }
+  const getDifficultyFromTitle = (title: string): string => {
+    // You can implement logic to determine difficulty, for now we'll use a simple mapping
+    const easyKeywords = ["chat", "smart home", "airport"];
+    const hardKeywords = ["banking", "iot", "video conference"];
+    
+    if (easyKeywords.some(keyword => title.toLowerCase().includes(keyword))) return "Easy";
+    if (hardKeywords.some(keyword => title.toLowerCase().includes(keyword))) return "Hard";
+    return "Medium";
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case "Easy": return "text-green-400 border-green-500/30 bg-green-500/10";
+      case "Medium": return "text-yellow-400 border-yellow-500/30 bg-yellow-500/10";
+      case "Hard": return "text-red-400 border-red-500/30 bg-red-500/10";
+      default: return "text-gray-400 border-gray-500/30 bg-gray-500/10";
     }
   };
 
-  const previousChallenge = () => {
-    if (currentChallengeIndex > 0) {
-      setCurrentChallengeIndex(currentChallengeIndex - 1);
-      setFillAnswers({});
-      setShowHint(false);
-      setIsSubmitted(false);
-      setIsCorrect(false);
-      if (challenges[currentChallengeIndex - 1].type === "drag" && challenges[currentChallengeIndex - 1].dragItems) {
-        const shuffled = [...challenges[currentChallengeIndex - 1].dragItems!].sort(() => Math.random() - 0.5);
-        setDraggedItems(shuffled);
-      }
-    }
-  };
-
-  return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="pb-24 px-4 pt-6 max-w-5xl mx-auto min-h-screen">
+  // Ticket Selection View
+  if (!selectedChallenge) {
+    return (
+      <div className="pb-24 px-4 pt-6 max-w-7xl mx-auto min-h-screen">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-6"
+          className="flex items-center justify-between mb-8"
         >
           <div className="flex items-center gap-4">
             <Button
@@ -248,18 +251,167 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
               </div>
               <div>
                 <h1 className="text-white">Code Arena</h1>
-                <p className="text-xs text-gray-400">Test your Mediator pattern skills</p>
+                <p className="text-xs text-gray-400">Choose your coding challenge</p>
               </div>
             </div>
           </div>
           <Badge className="bg-[#5865F2] text-white">
-            {currentChallengeIndex + 1} / {challenges.length}
+            {challenges.length} Challenges
           </Badge>
+        </motion.div>
+
+        {/* Title */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center mb-10"
+        >
+          <h2 className="text-xl text-white mb-2">🎫 Select Your Challenge Ticket</h2>
+          <p className="text-gray-400 text-sm">Pick any challenge to start coding</p>
+        </motion.div>
+
+        {/* Train Tickets Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {challenges.map((challenge, index) => {
+            const difficulty = getDifficultyFromTitle(challenge.title);
+            
+            return (
+              <motion.div
+                key={challenge.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileHover={{ scale: 1.03, y: -4 }}
+                onClick={() => handleSelectChallenge(challenge)}
+                className="cursor-pointer"
+              >
+                {/* Train Ticket Card */}
+                <div className="relative bg-gradient-to-br from-amber-100 to-amber-50 rounded-t-xl overflow-hidden border-2 border-amber-200 shadow-xl"
+                     style={{
+                       boxShadow: '0 8px 0 rgba(217, 119, 6, 0.2), 0 10px 20px rgba(0, 0, 0, 0.3)'
+                     }}>
+                  {/* Ticket Header */}
+                  <div className="bg-gradient-to-r from-amber-600 to-amber-700 px-4 py-3 border-b-2 border-dashed border-amber-300">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <Ticket className="w-5 h-5 text-amber-100" />
+                        <span className="text-amber-100 text-xs font-bold">TICKET #{challenge.id}</span>
+                      </div>
+                      <Badge className={`text-xs ${getDifficultyColor(difficulty)}`}>
+                        {difficulty}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Ticket Content */}
+                  <div className="p-5">
+                    {/* Title */}
+                    <h3 className="text-gray-900 font-bold text-lg mb-3 min-h-[56px]">
+                      {challenge.title}
+                    </h3>
+
+                    {/* Type Badge */}
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        challenge.type === "fill" 
+                          ? "bg-blue-500 text-white" 
+                          : "bg-purple-500 text-white"
+                      }`}>
+                        {challenge.type === "fill" ? "Fill in the Blanks" : "Drag & Drop"}
+                      </div>
+                    </div>
+
+                    {/* Decorative elements */}
+                    <div className="flex items-center justify-between text-xs text-gray-600 border-t border-dashed border-amber-300 pt-3">
+                      <span>🚂 MEDIATOR EXPRESS</span>
+                      <span>PLATFORM {challenge.id}</span>
+                    </div>
+                  </div>
+
+                  {/* Torn bottom edge */}
+                  <div className="h-4 bg-gradient-to-r from-amber-100 to-amber-50 relative">
+                    <svg className="absolute bottom-0 w-full" height="16" xmlns="http://www.w3.org/2000/svg">
+                      <pattern id={`torn-${challenge.id}`} x="0" y="0" width="20" height="16" patternUnits="userSpaceOnUse">
+                        <path d="M 0 0 L 10 16 L 20 0 Z" fill="#23272A" />
+                      </pattern>
+                      <rect width="100%" height="16" fill={`url(#torn-${challenge.id})`} />
+                    </svg>
+                  </div>
+
+                  {/* Punch holes */}
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#23272A] rounded-full border-2 border-amber-300" />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#23272A] rounded-full border-2 border-amber-300" />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Legend */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center justify-center gap-6 mb-8"
+        >
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-400 rounded" />
+            <span className="text-gray-400 text-sm">Easy</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-yellow-400 rounded" />
+            <span className="text-gray-400 text-sm">Medium</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-red-400 rounded" />
+            <span className="text-gray-400 text-sm">Hard</span>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Challenge View (when a ticket is selected)
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div className="pb-24 px-4 pt-6 max-w-5xl mx-auto min-h-screen">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-6"
+        >
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={handleBackToSelection}
+              className="text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#5865F2] rounded-lg flex items-center justify-center glow-effect">
+                <Code className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-white">Code Arena</h1>
+                <p className="text-xs text-gray-400">Ticket #{selectedChallenge.id}</p>
+              </div>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownload}
+            className="bg-[#2C2F33] border-[#2F3136] text-white hover:bg-[#5865F2]"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Solution
+          </Button>
         </motion.div>
 
         {/* Challenge Card */}
         <motion.div
-          key={currentChallengeIndex}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
@@ -268,9 +420,9 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
             {/* Title */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h2 className="text-white mb-2">{currentChallenge.title}</h2>
+                <h2 className="text-white mb-2">{selectedChallenge.title}</h2>
                 <Badge variant="outline" className="border-[#5865F2] text-[#5865F2]">
-                  {currentChallenge.type === "fill" ? "Fill in the Blanks" : "Drag & Drop"}
+                  {selectedChallenge.type === "fill" ? "Fill in the Blanks" : "Drag & Drop"}
                 </Badge>
               </div>
             </div>
@@ -284,127 +436,85 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                 Scenario
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed bg-[#23272A] p-4 rounded-lg border border-[#2F3136]">
-                {currentChallenge.scenario}
+                {selectedChallenge.scenario}
               </p>
             </div>
 
-            {/* Hint */}
-            <div className="mb-6">
-              <Button
-                variant="ghost"
-                onClick={() => setShowHint(!showHint)}
-                className="text-gray-300 hover:text-white mb-2 p-0 h-auto"
-              >
-                <Lightbulb className="w-5 h-5 mr-2 text-yellow-500" />
-                {showHint ? "Hide Hint" : "Show Hint"}
-              </Button>
-              <AnimatePresence>
-                {showHint && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-gray-400 text-sm bg-yellow-500/10 p-4 rounded-lg border border-yellow-500/20">
-                      💡 {currentChallenge.hint}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Activity */}
-            <div className="mb-6">
-              <h3 className="text-gray-300 mb-4 flex items-center gap-2">
-                <div className="w-6 h-6 bg-[#5865F2]/20 rounded flex items-center justify-center">
-                  <Code className="w-4 h-4 text-[#5865F2]" />
+            {/* Code Section */}
+            {selectedChallenge.type === "fill" ? (
+              <div className="bg-[#1E2124] rounded-lg p-4 border border-[#2F3136] mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-400 text-sm font-mono">mediator.cpp</span>
                 </div>
-                Activity
-              </h3>
-
-              {currentChallenge.type === "fill" ? (
-                <div className="bg-[#1E1F22] rounded-lg border border-[#2F3136] overflow-hidden">
-                  <div className="flex">
-                    {/* Line Numbers */}
-                    <div className="bg-[#23272A] px-4 py-4 border-r border-[#2F3136] select-none">
-                      {currentChallenge.code.split("\n").map((_, idx) => (
-                        <div key={idx} className="text-gray-600 text-sm font-mono leading-relaxed text-right">
-                          {idx + 1}
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Code Content */}
-                    <div className="flex-1 px-4 py-4 overflow-x-auto">
-                      {currentChallenge.code.split("\n").map((line, idx) => {
-                        const blankMatch = line.match(/___BLANK(\d+)___/);
-                        if (blankMatch) {
-                          const blankId = `BLANK${blankMatch[1]}`;
-                          const blank = currentChallenge.blanks?.find(b => b.id === blankId);
-                          const parts = line.split(/___BLANK\d+___/);
-                          
-                          return (
-                            <div key={idx} className="leading-relaxed flex items-center gap-2 min-h-[24px]">
-                              <code 
-                                className="text-gray-300 font-mono text-sm"
-                                dangerouslySetInnerHTML={{ __html: highlightCppSyntax(parts[0]) }}
-                              />
-                              <div className="relative inline-block">
-                                <Input
-                                  value={fillAnswers[blankId] || ""}
-                                  onChange={(e) => handleFillAnswer(blankId, e.target.value)}
-                                  className="bg-[#2C2F33] border-[#5865F2] text-white w-40 h-7 text-sm px-2 font-mono"
-                                  placeholder="Type here..."
-                                  disabled={isSubmitted && isCorrect}
-                                />
-                                {isSubmitted && (
-                                  <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="absolute -right-8 top-1/2 -translate-y-1/2"
-                                  >
-                                    {fillAnswers[blankId]?.trim().toLowerCase() === blank?.answer.toLowerCase() ? (
-                                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                    ) : (
-                                      <XCircle className="w-5 h-5 text-red-500" />
-                                    )}
-                                  </motion.div>
-                                )}
-                              </div>
-                              <code 
-                                className="text-gray-300 font-mono text-sm"
-                                dangerouslySetInnerHTML={{ __html: highlightCppSyntax(parts[1] || '') }}
-                              />
-                            </div>
-                          );
-                        }
-                        return (
-                          <div key={idx} className="leading-relaxed min-h-[24px]">
-                            <code 
-                              className="text-gray-300 font-mono text-sm"
-                              dangerouslySetInnerHTML={{ __html: highlightCppSyntax(line) }}
+                <div className="space-y-1 font-mono text-sm">
+                  {selectedChallenge.code.split("\n").map((line, index) => {
+                    const blankMatch = line.match(/___BLANK(\d+)___/);
+                    if (blankMatch) {
+                      const blankId = `BLANK${blankMatch[1]}`;
+                      const blank = selectedChallenge.blanks?.find(b => b.id === blankId);
+                      return (
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="text-gray-600 select-none w-8 text-right">{index + 1}</span>
+                          <code className="flex-1 flex items-center gap-2">
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: highlightCppSyntax(line.substring(0, line.indexOf("___BLANK")))
+                              }}
                             />
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                            <Input
+                              value={fillAnswers[blankId] || ""}
+                              onChange={(e) => handleFillAnswer(blankId, e.target.value)}
+                              disabled={isSubmitted}
+                              className={`inline-block w-40 h-8 px-2 text-sm bg-[#2C2F33] border ${
+                                isSubmitted
+                                  ? fillAnswers[blankId]?.trim().toLowerCase() === blank?.answer.toLowerCase()
+                                    ? "border-green-500 bg-green-500/10"
+                                    : "border-red-500 bg-red-500/10"
+                                  : "border-[#5865F2]"
+                              } text-white`}
+                              placeholder="???"
+                            />
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: highlightCppSyntax(line.substring(line.indexOf("___BLANK") + `___BLANK${blankMatch[1]}___`.length))
+                              }}
+                            />
+                          </code>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={index} className="flex items-center gap-2">
+                        <span className="text-gray-600 select-none w-8 text-right">{index + 1}</span>
+                        <code
+                          className="text-gray-300"
+                          dangerouslySetInnerHTML={{ __html: highlightCppSyntax(line) }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-sm text-gray-400">Drag to reorder the code lines</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={shuffleItems}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      <Shuffle className="w-4 h-4 mr-2" />
-                      Shuffle
-                    </Button>
-                  </div>
+              </div>
+            ) : (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-gray-300 flex items-center gap-2">
+                    <div className="w-6 h-6 bg-[#5865F2]/20 rounded flex items-center justify-center">
+                      <span className="text-[#5865F2]">🧩</span>
+                    </div>
+                    Drag to arrange in correct order
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={shuffleItems}
+                    className="bg-[#2C2F33] border-[#2F3136] text-white hover:bg-[#5865F2]"
+                  >
+                    <Shuffle className="w-4 h-4 mr-2" />
+                    Shuffle
+                  </Button>
+                </div>
+                <div className="bg-[#23272A] rounded-lg p-4 border border-[#2F3136]">
                   {draggedItems.map((item, index) => (
                     <DraggableItem
                       key={item.id}
@@ -413,79 +523,89 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                       moveItem={moveItem}
                     />
                   ))}
-                  {isSubmitted && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center gap-2 mt-4"
-                    >
-                      {isCorrect ? (
-                        <div className="flex items-center gap-2 text-green-500">
-                          <CheckCircle2 className="w-5 h-5" />
-                          <span className="text-sm">Perfect order!</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-red-500">
-                          <XCircle className="w-5 h-5" />
-                          <span className="text-sm">Try reordering the lines</span>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <div className="flex gap-3">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="flex-1">
                 <Button
                   onClick={handleSubmit}
-                  className="bg-[#5865F2] hover:bg-[#4752C4] text-white glow-effect"
-                  disabled={isSubmitted && isCorrect}
+                  disabled={isSubmitted}
+                  className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white glow-effect"
                 >
-                  {isSubmitted ? (isCorrect ? "Completed ✓" : "Try Again") : "Submit Answer"}
+                  {isSubmitted ? (isCorrect ? "Correct!" : "Try Again") : "Check Solution"}
                 </Button>
               </motion.div>
-              
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleDownload}
-                  variant="outline"
-                  className="border-[#5865F2] hover:bg-[#5865F2] text-white"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download .cpp
-                </Button>
-              </motion.div>
+              <Button
+                variant="outline"
+                onClick={() => setShowHint(!showHint)}
+                className="bg-[#2C2F33] border-[#2F3136] hover:bg-[#5865F2] text-white"
+              >
+                <Lightbulb className="w-4 h-4" />
+              </Button>
             </div>
           </Card>
         </motion.div>
 
-        {/* Navigation */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="flex justify-between"
-        >
-          <Button
-            variant="ghost"
-            onClick={previousChallenge}
-            disabled={currentChallengeIndex === 0}
-            className="text-gray-400 hover:text-white disabled:opacity-50"
-          >
-            ← Previous Challenge
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={nextChallenge}
-            disabled={currentChallengeIndex === challenges.length - 1}
-            className="text-gray-400 hover:text-white disabled:opacity-50"
-          >
-            Next Challenge →
-          </Button>
-        </motion.div>
+        {/* Hint */}
+        <AnimatePresence>
+          {showHint && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <Card className="bg-[#5865F2]/10 border-[#5865F2] p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-5 h-5 text-[#5865F2] mt-0.5" />
+                  <div>
+                    <h4 className="text-[#5865F2] mb-1">Hint</h4>
+                    <p className="text-gray-300 text-sm">{selectedChallenge.hint}</p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Result Feedback */}
+        <AnimatePresence>
+          {isSubmitted && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Card className={`p-6 border-2 ${
+                isCorrect
+                  ? "bg-green-500/10 border-green-500"
+                  : "bg-red-500/10 border-red-500"
+              }`}>
+                <div className="flex items-center gap-3">
+                  {isCorrect ? (
+                    <CheckCircle2 className="w-8 h-8 text-green-400" />
+                  ) : (
+                    <XCircle className="w-8 h-8 text-red-400" />
+                  )}
+                  <div>
+                    <h3 className={`text-lg font-bold mb-1 ${
+                      isCorrect ? "text-green-400" : "text-red-400"
+                    }`}>
+                      {isCorrect ? "Perfect! 🎉" : "Not quite right"}
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      {isCorrect
+                        ? "You've successfully implemented the Mediator pattern!"
+                        : "Review the hint and try again. You're close!"}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </DndProvider>
   );

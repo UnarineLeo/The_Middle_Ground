@@ -10,7 +10,7 @@ export function BottomNav({ currentPage, onNavigate }: BottomNavProps) {
   const navItems = [
     { id: "home", icon: Home, label: "Home" },
     { id: "quiz", icon: Trophy, label: "Quiz" },
-    { id: "codearena", icon: Bug, label: "Arena" },
+    { id: "codearena", icon: Bug, label: "Debug" },
     { id: "learn", icon: Book, label: "Learn The Pattern" },
     { id: "conductor", icon: Gamepad2, label: "Conductor" }
   ];
