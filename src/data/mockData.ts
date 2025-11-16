@@ -401,13 +401,13 @@ export const userProfile = {
 
 export const leaderboard = [
   { rank: 1, name: "Emma Wilson", score: 4250, badges: 15, avatar: "EW", status: "winner" },
-  { rank: 2, name: "Michael Chen", score: 3890, badges: 12, avatar: "MC", status: "winner" },
+  { rank: 2, name: "Musa Ntyatyamba", score: 3890, badges: 12, avatar: "MC", status: "winner" },
   { rank: 3, name: "Sarah Davis", score: 3645, badges: 11, avatar: "SD", status: "winner" },
   { rank: 4, name: "Wandile Mathebula", score: 2847, badges: 8, avatar: "AJ", status: "winner" },
   { rank: 5, name: "James Brown", score: 2430, badges: 7, avatar: "JB", status: "winner" },
-  { rank: 6, name: "Lisa Anderson", score: 2180, badges: 6, avatar: "LA", status: "loser" },
+  { rank: 6, name: "Monna KeVan", score: 2180, badges: 6, avatar: "LA", status: "loser" },
   { rank: 7, name: "David Martinez", score: 1920, badges: 5, avatar: "DM", status: "loser" },
-  { rank: 8, name: "Sophie Taylor", score: 1650, badges: 4, avatar: "ST", status: "loser" }
+  { rank: 8, name: "Tlaba Obewete", score: 1650, badges: 4, avatar: "ST", status: "loser" }
 ];
 
 export const conductorNodes = [
@@ -779,5 +779,356 @@ public:
     }
 };`
   },
+    {
+    id: 6,
+    title: "Airline Booking Coordination",
+    scenario: "You're building a flight booking system where multiple booking agents need to coordinate seat availability through a central FlightMediator. Without the mediator, each agent would query every other agent to verify available seats, causing redundant network calls. With the mediator, the FlightMediator keeps a central record of available seats and informs all agents whenever a booking is made. Your task is to fill in the missing parts of the mediator and agent classes to establish communication.",
+    hint: "The FlightMediator class needs a 'notifyAgents' method that broadcasts updates. Agents call 'bookSeat' on the mediator to reserve seats, and the mediator then calls 'update' on other agents.",
+    type: "fill",
+    code: `class FlightMediator {
+private:
+    vector<BookingAgent*> agents;
+public:
+    void registerAgent(BookingAgent* agent) {
+        agents.push_back(agent);
+    }
+
+    void ___BLANK1___(BookingAgent* sender, string flight) {
+        for (auto agent : agents) {
+            if (agent != sender) {
+                agent->___BLANK2___(flight);
+            }
+        }
+    }
+};
+
+class BookingAgent {
+private:
+    FlightMediator* mediator;
+    string name;
+public:
+    BookingAgent(string n, FlightMediator* m) : name(n), mediator(m) {
+        m->registerAgent(this);
+    }
+
+    void bookSeat(string flight) {
+        cout << name << " booked seat on " << flight << endl;
+        mediator->___BLANK3___(this, flight);
+    }
+
+    void update(string flight) {
+        cout << name << " notified: " << flight << " seat count changed" << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "notifyAgents" },
+      { id: "BLANK2", answer: "update" },
+      { id: "BLANK3", answer: "notifyAgents" }
+    ],
+    correctCode: `class FlightMediator {
+private:
+    vector<BookingAgent*> agents;
+public:
+    void registerAgent(BookingAgent* agent) {
+        agents.push_back(agent);
+    }
+
+    void notifyAgents(BookingAgent* sender, string flight) {
+        for (auto agent : agents) {
+            if (agent != sender) {
+                agent->update(flight);
+            }
+        }
+    }
+};
+
+class BookingAgent {
+private:
+    FlightMediator* mediator;
+    string name;
+public:
+    BookingAgent(string n, FlightMediator* m) : name(n), mediator(m) {
+        m->registerAgent(this);
+    }
+
+    void bookSeat(string flight) {
+        cout << name << " booked seat on " << flight << endl;
+        mediator->notifyAgents(this, flight);
+    }
+
+    void update(string flight) {
+        cout << name << " notified: " << flight << " seat count changed" << endl;
+    }
+};`
+  },
+  {
+    id: 7,
+    title: "Traffic Light System",
+    scenario: "At an intersection, traffic lights coordinate through a central mediator so no two lights turn green simultaneously. Without a mediator, each light would need to monitor all others. Implement a TrafficMediator that ensures only one green light at a time.",
+    hint: "The mediator manages multiple TrafficLight objects and receives 'changeToGreen' requests from them. It sets all others to red.",
+    type: "fill",
+    code: `class TrafficMediator {
+private:
+    vector<TrafficLight*> lights;
+public:
+    void registerLight(TrafficLight* light) {
+        lights.push_back(light);
+    }
+
+    void ___BLANK1___(TrafficLight* requester) {
+        for (auto light : lights) {
+            if (light != requester) {
+                light->___BLANK2___();
+            }
+        }
+        requester->___BLANK3___();
+    }
+};
+
+class TrafficLight {
+private:
+    TrafficMediator* mediator;
+    string location;
+public:
+    TrafficLight(string loc, TrafficMediator* med) : location(loc), mediator(med) {
+        mediator->registerLight(this);
+    }
+
+    void requestGreen() {
+        mediator->grantGreen(this);
+    }
+
+    void turnGreen() {
+        cout << location << " light is GREEN" << endl;
+    }
+
+    void turnRed() {
+        cout << location << " light is RED" << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "grantGreen" },
+      { id: "BLANK2", answer: "turnRed" },
+      { id: "BLANK3", answer: "turnGreen" }
+    ],
+    correctCode: `class TrafficMediator {
+private:
+    vector<TrafficLight*> lights;
+public:
+    void registerLight(TrafficLight* light) {
+        lights.push_back(light);
+    }
+
+    void grantGreen(TrafficLight* requester) {
+        for (auto light : lights) {
+            if (light != requester) {
+                light->turnRed();
+            }
+        }
+        requester->turnGreen();
+    }
+};
+
+class TrafficLight {
+private:
+    TrafficMediator* mediator;
+    string location;
+public:
+    TrafficLight(string loc, TrafficMediator* med) : location(loc), mediator(med) {
+        mediator->registerLight(this);
+    }
+
+    void requestGreen() {
+        mediator->grantGreen(this);
+    }
+
+    void turnGreen() {
+        cout << location << " light is GREEN" << endl;
+    }
+
+    void turnRed() {
+        cout << location << " light is RED" << endl;
+    }
+};`
+  },
+  {
+    id: 8,
+    title: "Chat Support System",
+    scenario: "Customer support agents communicate through a central SupportMediator that routes client messages to available agents. Without it, every agent would need to manage all client connections. Arrange the mediator structure correctly.",
+    hint: "Maintain agents in a private list, and in the 'dispatchMessage' method, call 'receiveMessage' on agents except the sender.",
+    type: "drag",
+    code: "",
+    dragItems: [
+      { id: "1", text: "class SupportMediator {", correctPosition: 0 },
+      { id: "2", text: "private:", correctPosition: 1 },
+      { id: "3", text: "    vector<SupportAgent*> agents;", correctPosition: 2 },
+      { id: "4", text: "public:", correctPosition: 3 },
+      { id: "5", text: "    void registerAgent(SupportAgent* agent) {", correctPosition: 4 },
+      { id: "6", text: "        agents.push_back(agent);", correctPosition: 5 },
+      { id: "7", text: "    }", correctPosition: 6 },
+      { id: "8", text: "    void dispatchMessage(SupportAgent* sender, string msg) {", correctPosition: 7 },
+      { id: "9", text: "        for (auto agent : agents) {", correctPosition: 8 },
+      { id: "10", text: "            if (agent != sender) agent->receiveMessage(msg);", correctPosition: 9 },
+      { id: "11", text: "        }", correctPosition: 10 },
+      { id: "12", text: "    }", correctPosition: 11 },
+      { id: "13", text: "};", correctPosition: 12 }
+    ],
+    correctCode: `class SupportMediator {
+private:
+    vector<SupportAgent*> agents;
+public:
+    void registerAgent(SupportAgent* agent) {
+        agents.push_back(agent);
+    }
+    void dispatchMessage(SupportAgent* sender, string msg) {
+        for (auto agent : agents) {
+            if (agent != sender) agent->receiveMessage(msg);
+        }
+    }
+};`
+  },
+  {
+    id: 9,
+    title: "Classroom Communication App",
+    scenario: "Design a classroom app where students communicate through a Teacher mediator. When a student sends a question, the teacher relays it to all others.",
+    hint: "Use 'sendQuestion' in Student and 'relayMessage' in TeacherMediator.",
+    type: "fill",
+    code: `class TeacherMediator {
+private:
+    vector<Student*> students;
+public:
+    void addStudent(Student* s) { students.push_back(s); }
+
+    void ___BLANK1___(Student* sender, string msg) {
+        for (auto s : students)
+            if (s != sender)
+                s->___BLANK2___(msg);
+    }
+};
+
+class Student {
+private:
+    TeacherMediator* mediator;
+    string name;
+public:
+    Student(string n, TeacherMediator* m) : name(n), mediator(m) { m->addStudent(this); }
+
+    void sendQuestion(string msg) {
+        mediator->___BLANK3___(this, msg);
+    }
+
+    void receive(string msg) {
+        cout << name << " received: " << msg << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "relayMessage" },
+      { id: "BLANK2", answer: "receive" },
+      { id: "BLANK3", answer: "relayMessage" }
+    ],
+    correctCode: `class TeacherMediator {
+private:
+    vector<Student*> students;
+public:
+    void addStudent(Student* s) { students.push_back(s); }
+
+    void relayMessage(Student* sender, string msg) {
+        for (auto s : students)
+            if (s != sender)
+                s->receive(msg);
+    }
+};
+
+class Student {
+private:
+    TeacherMediator* mediator;
+    string name;
+public:
+    Student(string n, TeacherMediator* m) : name(n), mediator(m) { m->addStudent(this); }
+
+    void sendQuestion(string msg) {
+        mediator->relayMessage(this, msg);
+    }
+
+    void receive(string msg) {
+        cout << name << " received: " << msg << endl;
+    }
+};`
+  },
+  {
+    id: 10,
+    title: "Game Lobby Communication",
+    scenario: "Players in an online lobby communicate via a GameLobbyMediator. When a player sends a chat, the mediator broadcasts it to others. Without the mediator, every player would need direct references to all others.",
+    hint: "Focus on 'notifyPlayers' in the mediator and 'receiveChat' in the Player class.",
+    type: "fill",
+    code: `class GameLobbyMediator {
+private:
+    vector<Player*> players;
+public:
+    void registerPlayer(Player* p) { players.push_back(p); }
+
+    void ___BLANK1___(Player* sender, string msg) {
+        for (auto p : players) {
+            if (p != sender)
+                p->___BLANK2___(msg);
+        }
+    }
+};
+
+class Player {
+private:
+    GameLobbyMediator* mediator;
+    string name;
+public:
+    Player(string n, GameLobbyMediator* m) : name(n), mediator(m) {
+        m->registerPlayer(this);
+    }
+
+    void sendChat(string msg) {
+        mediator->___BLANK3___(this, msg);
+    }
+
+    void receiveChat(string msg) {
+        cout << name << " sees message: " << msg << endl;
+    }
+};`,
+    blanks: [
+      { id: "BLANK1", answer: "notifyPlayers" },
+      { id: "BLANK2", answer: "receiveChat" },
+      { id: "BLANK3", answer: "notifyPlayers" }
+    ],
+    correctCode: `class GameLobbyMediator {
+private:
+    vector<Player*> players;
+public:
+    void registerPlayer(Player* p) { players.push_back(p); }
+
+    void notifyPlayers(Player* sender, string msg) {
+        for (auto p : players) {
+            if (p != sender)
+                p->receiveChat(msg);
+        }
+    }
+};
+
+class Player {
+private:
+    GameLobbyMediator* mediator;
+    string name;
+public:
+    Player(string n, GameLobbyMediator* m) : name(n), mediator(m) {
+        m->registerPlayer(this);
+    }
+
+    void sendChat(string msg) {
+        mediator->notifyPlayers(this, msg);
+    }
+
+    void receiveChat(string msg) {
+        cout << name << " sees message: " << msg << endl;
+    }
+};`
+  },
+
 ];
 

@@ -151,7 +151,8 @@ export function ScoreboardPage({ onNavigate }: ScoreboardPageProps) {
         {[
           { id: "all", label: "All Players", icon: Trophy },
           { id: "winners", label: "Winners", icon: Award },
-          { id: "losers", label: "Rising Stars", icon: Zap }
+          { id: "losers", label: "Rising Stars", icon: Zap },
+          { id: "tryagain", label: "Engagers", icon: Zap }
         ].map((tab) => {
           const Icon = tab.icon;
           return (

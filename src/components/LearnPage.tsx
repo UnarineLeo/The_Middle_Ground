@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, Video, FileText, Headphones, CheckCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Video, FileText, Headphones, CheckCircle, Bot } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { Progress } from "./ui/progress";
@@ -73,6 +73,14 @@ export function LearnPage({ patternId = 1, onNavigate }: LearnPageProps) {
               <p className="text-sm text-gray-400">{pattern.category} Pattern</p>
             </div>
           </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onNavigate("chatbot")}
+            className="p-2 rounded-lg bg-[#2C2F33] text-[#5865F2] hover:bg-[#5865F2] hover:text-white transition-all glow-effect"
+          >
+            <Bot className="w-5 h-5" />
+          </motion.button>
         </div>
       </motion.div>
 
@@ -220,7 +228,17 @@ export function LearnPage({ patternId = 1, onNavigate }: LearnPageProps) {
           </Button>
         </motion.div>
 
-        <Button
+        if(progress === 100){
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={() => onNavigate("quiz")}
+              className="bg-[#5865F2] hover:bg-[#4752C4] text-white glow-effect"
+            >
+              Check Your Knowledge
+            </Button>
+          </motion.div>
+        } else{
+          <Button
           onClick={handleNext}
           disabled={currentSection === sections.length - 1}
           className="bg-[#2C2F33] border-[#2F3136] text-white hover:bg-[#5865F2] disabled:opacity-50"
@@ -228,6 +246,8 @@ export function LearnPage({ patternId = 1, onNavigate }: LearnPageProps) {
           Next
           <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
+        }
+        
       </motion.div>
 
       {/* Section Indicators */}

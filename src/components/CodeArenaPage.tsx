@@ -37,7 +37,7 @@ const highlightCppSyntax = (code: string) => {
   let highlighted = trimmedCode;
   
   highlighted = highlighted.replace(/\/\/(.*)/g, '<span class="text-gray-500 italic">// $1</span>');
-  highlighted = highlighted.replace(/"([^"]*)"/g, '<span class="text-green-400">"$1"</span>');
+  highlighted = highlighted.replace(/"([^"]*)"/g, '<span class="text-green-400">// "$1"</span>');
   
   keywords.forEach(keyword => {
     const regex = new RegExp(`\\b(${keyword})\\b`, 'g');
@@ -209,7 +209,6 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
   };
 
   const getDifficultyFromTitle = (title: string): string => {
-    // You can implement logic to determine difficulty, for now we'll use a simple mapping
     const easyKeywords = ["chat", "smart home", "airport"];
     const hardKeywords = ["banking", "iot", "video conference"];
     
@@ -286,12 +285,12 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                 className="cursor-pointer"
               >
                 {/* Train Ticket Card */}
-                <div className="relative bg-gradient-to-br from-amber-100 to-amber-50 rounded-t-xl overflow-hidden border-2 border-amber-200 shadow-xl"
+                <div className="relative bg-gradient-to-br from-amber-100 to-amber-50 overflow-hidden border-2 border-amber-200 shadow-xl"
                      style={{
-                       boxShadow: '0 8px 0 rgba(217, 119, 6, 0.2), 0 10px 20px rgba(0, 0, 0, 0.3)'
+                       boxShadow: '0 0px 0 rgba(217, 119, 6, 0.2), 0 0px 0px rgba(0, 0, 0, 0.3)'
                      }}>
                   {/* Ticket Header */}
-                  <div className="bg-gradient-to-r from-amber-600 to-amber-700 px-4 py-3 border-b-2 border-dashed border-amber-300">
+                  <div className="bg-[#5865F2] from-amber-600 to-amber-700 px-4 py-3 border-b-2 border-dashed border-black">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2">
                         <Ticket className="w-5 h-5 text-amber-100" />
@@ -305,12 +304,10 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
 
                   {/* Ticket Content */}
                   <div className="p-5">
-                    {/* Title */}
                     <h3 className="text-gray-900 font-bold text-lg mb-3 min-h-[56px]">
                       {challenge.title}
                     </h3>
 
-                    {/* Type Badge */}
                     <div className="flex items-center gap-2 mb-4">
                       <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                         challenge.type === "fill" 
@@ -321,57 +318,35 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                       </div>
                     </div>
 
-                    {/* Decorative elements */}
-                    <div className="flex items-center justify-between text-xs text-gray-600 border-t border-dashed border-amber-300 pt-3">
+                    <div className="flex items-center justify-between text-xs text-gray-600 border-t border-dashed border-black pt-3">
                       <span>🚂 MEDIATOR EXPRESS</span>
                       <span>PLATFORM {challenge.id}</span>
                     </div>
                   </div>
 
                   {/* Torn bottom edge */}
-                  <div className="h-4 bg-gradient-to-r from-amber-100 to-amber-50 relative">
-                    <svg className="absolute bottom-0 w-full" height="16" xmlns="http://www.w3.org/2000/svg">
-                      <pattern id={`torn-${challenge.id}`} x="0" y="0" width="20" height="16" patternUnits="userSpaceOnUse">
-                        <path d="M 0 0 L 10 16 L 20 0 Z" fill="#23272A" />
-                      </pattern>
-                      <rect width="100%" height="16" fill={`url(#torn-${challenge.id})`} />
-                    </svg>
+                  <div className="relative h-5 overflow-hidden">
+                    {/* straight top edge */}
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-amber-200" />
+
+                    
+
+                    {/* ticket background behind torn section */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-amber-50 -z-10" />
                   </div>
 
                   {/* Punch holes */}
-                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#23272A] rounded-full border-2 border-amber-300" />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#23272A] rounded-full border-2 border-amber-300" />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full border-2 border-black" />
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-white rounded-full border-2 border-black" />
                 </div>
               </motion.div>
             );
           })}
         </div>
-
-        {/* Legend */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-center justify-center gap-6 mb-8"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-400 rounded" />
-            <span className="text-gray-400 text-sm">Easy</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-yellow-400 rounded" />
-            <span className="text-gray-400 text-sm">Medium</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-400 rounded" />
-            <span className="text-gray-400 text-sm">Hard</span>
-          </div>
-        </motion.div>
       </div>
     );
   }
 
-  // Challenge View (when a ticket is selected)
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="pb-24 px-4 pt-6 max-w-5xl mx-auto min-h-screen">
@@ -399,15 +374,7 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
               </div>
             </div>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownload}
-            className="bg-[#2C2F33] border-[#2F3136] text-white hover:bg-[#5865F2]"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Solution
-          </Button>
+          
         </motion.div>
 
         {/* Challenge Card */}
@@ -472,7 +439,7 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                                     : "border-red-500 bg-red-500/10"
                                   : "border-[#5865F2]"
                               } text-white`}
-                              placeholder="???"
+                              placeholder=""
                             />
                             <span
                               dangerouslySetInnerHTML={{
@@ -539,12 +506,24 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
                 </Button>
               </motion.div>
               <Button
-                variant="outline"
-                onClick={() => setShowHint(!showHint)}
-                className="bg-[#2C2F33] border-[#2F3136] hover:bg-[#5865F2] text-white"
-              >
-                <Lightbulb className="w-4 h-4" />
-              </Button>
+                  variant="outline"
+                  onClick={() => setShowHint(!showHint)}
+                  className="bg-[#2C2F33] border-[#2F3136] hover:bg-[#5865F2] text-white"
+                >
+                  <Lightbulb />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDownload}
+                  disabled={!isSubmitted}
+                  className={`bg-[#2C2F33] border-[#2F3136] text-white hover:bg-[#5865F2] ${
+                    !isSubmitted ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Solution
+                </Button>
             </div>
           </Card>
         </motion.div>
@@ -557,7 +536,7 @@ export function CodeArenaPage({ onNavigate }: CodeArenaPageProps) {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
             >
-              <Card className="bg-[#5865F2]/10 border-[#5865F2] p-4 mb-6">
+              <Card className="bg-[#5865F2]/10 border-[f] p-4 mb-6">
                 <div className="flex items-start gap-3">
                   <Lightbulb className="w-5 h-5 text-[#5865F2] mt-0.5" />
                   <div>

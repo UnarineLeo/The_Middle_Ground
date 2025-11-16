@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, LogOut, MessageCircle, Award, ChevronRight, Trophy } from "lucide-react";
+import { Search, Filter, LogOut, Bot, Award, ChevronRight, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Badge } from "./ui/badge";
@@ -76,7 +76,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             onClick={() => onNavigate("chatbot")}
             className="p-2 rounded-lg bg-[#2C2F33] text-[#5865F2] hover:bg-[#5865F2] hover:text-white transition-all glow-effect"
           >
-            <MessageCircle className="w-5 h-5" />
+            <Bot className="w-5 h-5" />
           </motion.button>
           <Button variant="ghost" className="text-gray-400 hover:text-white">
             <LogOut className="w-5 h-5" />
